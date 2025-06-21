@@ -68,7 +68,7 @@ typedef enum {
 }Clase_e;
 
 typedef struct {
-	char nombre[50];
+	char *nombre;
 	Clase_e clase; 
 	int nivel;
 	int vida;
@@ -102,8 +102,8 @@ int main(int argc, char *argv []){
 		switch(contador){
 			
 			case 1: {
-				strcpy(personaje.nombre, "Sergio");
-				printf("Nombre: %s\n", personaje.nombre);
+				personaje.nombre = leerLineaDinamica(token);
+				printf("Nombre: %s \n", personaje.nombre);
 				break;
 			}
 			
@@ -158,6 +158,8 @@ int main(int argc, char *argv []){
 		contador++;
 	}
 	
+	free(buffer);
+	
 	//Damos valores a los campos de la estructura personaje
 	/*char *nombre = argv[1]; //IMPLEMENTAR LINEA DINAMICA
 	char *nombre = leerLineaDinamica(argv[1]);
@@ -192,24 +194,28 @@ char *convierteEnumString(Clase_e clase){
 	
 }
 
-/*char *leerLineaDinamica(char *nombre){
-	
-	char *nombrePersonaje = malloc(sizeof(char) * 1);
+char *leerLineaDinamica(char *nombre){
+	printf("Nombre -> %s\n", nombre);
+
+	char *linea = (char*)malloc(sizeof(char)*1);
+	if(linea == NULL){
+		printf("Error de asignacion de memoria en el nombre \n");
+		return 0;
+	}
+
 	int tamano = 1;
-	int contadorLetras = 0;
+	int numeroLetras = 0;
 	char c = 0;
 	
-	while((c == getchar()) != '\n'){
-		nombrePersonaje[contadorLetras] = c;
+	while((c = getchar()) != '\n'){
+		linea[numeroLetras] = c;
 		tamano++;
-		contadorLetras++;
-		nombrePersonaje = realloc(nombrePersonaje, tamano);
+		numeroLetras++;
+		
+		linea = (char*)realloc(linea,tamano);
 	}
 	
-	nombrePersonaje[numLetras] = '\0';
+	linea[numeroLetras] = '\0';	
+	return linea;
 	
-	//strcpy(nombrePersonaje, nombre);
-	//printf("Nombre: %s \n", nombre);
-	return nombre;
-	
-}*/
+}
