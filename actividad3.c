@@ -69,7 +69,7 @@ typedef enum {
 
 typedef struct {
 	char nombre[50];
-	Clase_e clase; //Poner en enum
+	Clase_e clase; 
 	int nivel;
 	int vida;
 	int poder_ataque;
@@ -79,42 +79,91 @@ typedef struct {
 
 Clase_e convierteStringEnum(char *clase);
 char *convierteEnumString(Clase_e clase);
+char *leerLineaDinamica(char *nombre);
 
 int main(int argc, char *argv []){
 	
 	Personaje_t personaje;
+	int contador = 1;
 	
-	if(argc != 9){
-		printf("Numero de parametros invalido\n");
+	if(argc != 2){
+		printf("Numero de parametros invalido (> o < a 2)\n");
 		return 0;
+	}
+	
+	char *buffer = (char*)malloc(strlen(argv[1]) + 1);
+	strcpy(buffer, argv[1]);
+	
+	char *token = strtok(buffer, ",");
+	
+	printf("---------------------------------\n");
+	while(token != NULL){
+			
+		switch(contador){
+			
+			case 1: {
+				strcpy(personaje.nombre, "Sergio");
+				printf("Nombre: %s\n", personaje.nombre);
+				break;
+			}
+			
+			case 2: {
+				char *clasePersonaje = token;
+				personaje.clase = convierteStringEnum(clasePersonaje);	
+				if(personaje.clase == INVALID_CLASS){
+					printf("Clase del personaje invalida\n");
+					return 0;
+				}
+				printf("Clase: %s \n", convierteEnumString(personaje.clase));
+				break;
+			}
+			
+			case 3: {
+				personaje.nivel = atoi(token);
+				printf("Nivel: %d \n", personaje.nivel);
+				break;
+			}
+
+			case 4: {
+				personaje.vida = atoi(token);
+				printf("Vida: %d \n", personaje.vida);
+				break;
+			}
+			
+			case 5: {
+				personaje.poder_ataque = atoi(token);
+				printf("Ataque: %d \n", personaje.poder_ataque);
+				break;
+			}
+			
+			case 6: {
+				personaje.capacidad_defensa = atoi(token);
+				printf("Defensa: %d \n", personaje.capacidad_defensa);
+				break;
+			}
+			
+			case 7: {
+				personaje.habilidad_magia = atoi(argv[7]);
+				printf("Habilidad magia: %d", personaje.habilidad_magia);
+				break;	
+			}
+			
+			default: {
+				printf("Error al darle valor a los parametros\n");
+				return 0;
+			}
+		}
+		
+		token = strtok(NULL, ",");
+		contador++;
 	}
 	
 	//Damos valores a los campos de la estructura personaje
-	char *nombre = argv[1]; //IMPLEMENTAR LINEA DINAMICA
-	char *clasePersonaje = argv[2];
+	/*char *nombre = argv[1]; //IMPLEMENTAR LINEA DINAMICA
+	char *nombre = leerLineaDinamica(argv[1]);
 	
 	strcpy(personaje.nombre, nombre);
-	
-	personaje.clase = convierteStringEnum(clasePersonaje);	
-	if(personaje.clase == INVALID_CLASS){
-		printf("Clase del personaje invalida\n");
-		return 0;
-	}
-	
-	personaje.nivel = atoi(argv[3]);
-	personaje.vida = atoi(argv[4]);
-	personaje.poder_ataque = atoi(argv[5]);
-	personaje.capacidad_defensa = atoi(argv[6]);
-	personaje.habilidad_magia = atoi(argv[7]);
-	
-	printf("------------------------------------ \n");
-	printf("Nombre: %s \n", personaje.nombre);
-	printf("Clase: %s \n", convierteEnumString(personaje.clase));
-	printf("Nivel: %d \n", personaje.nivel);
-	printf("Vida: %d \n", personaje.vida);
-	printf("Ataque: %d \n", personaje.poder_ataque);
-	printf("Defensa: %d \n", personaje.capacidad_defensa);
-	printf("Habilidad magia: %d", personaje.habilidad_magia);
+	*/
 	
 	return 0;
 }
@@ -142,3 +191,25 @@ char *convierteEnumString(Clase_e clase){
 	}
 	
 }
+
+/*char *leerLineaDinamica(char *nombre){
+	
+	char *nombrePersonaje = malloc(sizeof(char) * 1);
+	int tamano = 1;
+	int contadorLetras = 0;
+	char c = 0;
+	
+	while((c == getchar()) != '\n'){
+		nombrePersonaje[contadorLetras] = c;
+		tamano++;
+		contadorLetras++;
+		nombrePersonaje = realloc(nombrePersonaje, tamano);
+	}
+	
+	nombrePersonaje[numLetras] = '\0';
+	
+	//strcpy(nombrePersonaje, nombre);
+	//printf("Nombre: %s \n", nombre);
+	return nombre;
+	
+}*/
