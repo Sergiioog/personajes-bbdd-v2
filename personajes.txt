@@ -1,0 +1,4 @@
+Aragorn Guerrero 10 100 50 30 70
+Gandalf Paladin 8 120 40 20 90
+Legolas Arquero 9 90 70 20 50
+Frodo Rogue 6 80 30 10 40

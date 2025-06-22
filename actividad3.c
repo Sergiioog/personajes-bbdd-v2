@@ -18,6 +18,8 @@ Los datos que incluye son:
 
 El formato del fichero:
 
+En el caso de que no exista se debe pedir al usuario la información de los personajes y guardarla en dicho fichero. 
+
 Por cada línea, se tienen los datos de un personaje:
 	
 	Se debe mostrar por pantalla todos los personajes leídos del fichero, la media de los niveles y se
@@ -80,6 +82,8 @@ typedef struct {
 Clase_e convierteStringEnum(char *clase);
 char *convierteEnumString(Clase_e clase);
 char *leerLineaDinamica(char *nombre);
+void creaFichero();
+void insertaDatos(Personaje_t personaje);
 
 int main(int argc, char *argv []){
 	
@@ -96,14 +100,16 @@ int main(int argc, char *argv []){
 	
 	char *token = strtok(buffer, ",");
 	
-	printf("---------------------------------\n");
+	printf("-------------------------------------------\n");
 	while(token != NULL){
 			
 		switch(contador){
 			
 			case 1: {
-				personaje.nombre = leerLineaDinamica(token);
-				printf("Nombre: %s \n", personaje.nombre);
+				//personaje.nombre = leerLineaDinamica(token);
+				personaje.nombre = (char*)malloc(sizeof(char) * strlen(token) + 1);
+				strcpy(personaje.nombre, token);
+				printf("Nombre: %s \n", token);
 				break;
 			}
 			
@@ -143,8 +149,8 @@ int main(int argc, char *argv []){
 			}
 			
 			case 7: {
-				personaje.habilidad_magia = atoi(argv[7]);
-				printf("Habilidad magia: %d", personaje.habilidad_magia);
+				personaje.habilidad_magia = atoi(token);
+				printf("Habilidad magia: %d\n", personaje.habilidad_magia);
 				break;	
 			}
 			
@@ -158,14 +164,13 @@ int main(int argc, char *argv []){
 		contador++;
 	}
 	
+	
+	creaFichero();
+	insertaDatos(personaje);
+	
+	
+	free(personaje.nombre);
 	free(buffer);
-	
-	//Damos valores a los campos de la estructura personaje
-	/*char *nombre = argv[1]; //IMPLEMENTAR LINEA DINAMICA
-	char *nombre = leerLineaDinamica(argv[1]);
-	
-	strcpy(personaje.nombre, nombre);
-	*/
 	
 	return 0;
 }
@@ -194,7 +199,10 @@ char *convierteEnumString(Clase_e clase){
 	
 }
 
-char *leerLineaDinamica(char *nombre){
+/*char *leerLineaDinamica(char *nombre){ //He tratado de hacer que el nombre sea dinamico con linea dinamica, pero si se introduce Juan Manuel por ej el programa
+										   va a entender argv[0] = nombreProg, argv[1] = Juan, argv[2] = Manuel, argv[3] = el resto -> Numero de parametros invalido > 2
+										   ya que en la practica no hay un ejemplo de modelo de datos de entrada del usuario por argc/argv. Debido a esto he decidido,
+										   reservar memoria en caso de que se quiera meter un nombre unico o compuesto por " ";
 	printf("Nombre -> %s\n", nombre);
 
 	char *linea = (char*)malloc(sizeof(char)*1);
@@ -218,4 +226,37 @@ char *leerLineaDinamica(char *nombre){
 	linea[numeroLetras] = '\0';	
 	return linea;
 	
+}*/
+
+
+void creaFichero(){
+	
+	FILE *fichero = fopen("personajes.txt", "r");
+	
+	if(fichero == NULL){
+		fichero = fopen("personajes.txt", "w");
+		printf("Fichero creado con exito\n");
+	}
+		
+	fclose(fichero);
+}
+
+void insertaDatos(Personaje_t personaje){
+	
+	FILE *fichero = fopen("personajes.txt", "a");
+	
+	fprintf(fichero, "%s %s %d %d %d %d %d\n", personaje.nombre, convierteEnumString(personaje.clase), personaje.nivel,
+	personaje.vida, personaje.poder_ataque, personaje.capacidad_defensa, personaje.habilidad_magia);
+	
+	
+	
+	/*printf("Datos del personaje: \n");
+	printf("------------------------");
+	printf("Nombre: %s \n", personaje.nombre);
+	printf("Clase: %s \n", convierteEnumString(personaje.clase));
+	printf("Nivel: %d \n", personaje.nivel);
+	printf("Vida: %d \n", personaje.vida);
+	printf("Ataque: %d \n", personaje.poder_ataque);
+	printf("Defensa: %d \n", personaje.capacidad_defensa);
+	printf("Habilidad magia: %d \n", personaje.habilidad_magia);*/
 }
