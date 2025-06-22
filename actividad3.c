@@ -84,6 +84,7 @@ char *convierteEnumString(Clase_e clase);
 char *leerLineaDinamica(char *nombre);
 void creaFichero();
 void insertaDatos(Personaje_t personaje);
+void leerDatos();
 
 int main(int argc, char *argv []){
 	
@@ -167,6 +168,7 @@ int main(int argc, char *argv []){
 	
 	creaFichero();
 	insertaDatos(personaje);
+	leerDatos();
 	
 	
 	free(personaje.nombre);
@@ -245,8 +247,13 @@ void insertaDatos(Personaje_t personaje){
 	
 	FILE *fichero = fopen("personajes.txt", "a");
 	
-	fprintf(fichero, "%s %s %d %d %d %d %d\n", personaje.nombre, convierteEnumString(personaje.clase), personaje.nivel,
-	personaje.vida, personaje.poder_ataque, personaje.capacidad_defensa, personaje.habilidad_magia);
+	if(fichero == NULL){
+		printf("Error, no se pudo escribir en el archivo\n");
+	}else{
+		fprintf(fichero, "%s %s %d %d %d %d %d\n", personaje.nombre, convierteEnumString(personaje.clase), personaje.nivel,
+		personaje.vida, personaje.poder_ataque, personaje.capacidad_defensa, personaje.habilidad_magia);
+	}
+	
 	
 	
 	
@@ -259,4 +266,17 @@ void insertaDatos(Personaje_t personaje){
 	printf("Ataque: %d \n", personaje.poder_ataque);
 	printf("Defensa: %d \n", personaje.capacidad_defensa);
 	printf("Habilidad magia: %d \n", personaje.habilidad_magia);*/
+}
+
+void leerDatos(){
+	
+	FILE *fichero = fopen("personajes.txt", "r");
+	
+	if (fichero == NULL) {
+        printf("No se pudo abrir el archivo.\n");
+        return; 
+    }
+	
+	
+	fclose(fichero);
 }
