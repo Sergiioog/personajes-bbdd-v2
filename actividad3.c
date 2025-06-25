@@ -70,7 +70,8 @@ typedef enum {
 }Clase_e;
 
 typedef struct {
-	char *nombre;
+	//char *nombre;
+	char nombre[150];
 	Clase_e clase; 
 	int nivel;
 	int vida;
@@ -108,9 +109,9 @@ int main(int argc, char *argv []){
 			
 			case 1: {
 				//personaje.nombre = leerLineaDinamica(token);
-				personaje.nombre = (char*)malloc(sizeof(char) * strlen(token) + 1);
+				//personaje.nombre = (char*)malloc(sizeof(char) * strlen(token) + 1);
 				strcpy(personaje.nombre, token);
-				printf("Nombre: %s \n", token);
+				//printf("Nombre: %s \n", token);
 				break;
 			}
 			
@@ -121,37 +122,37 @@ int main(int argc, char *argv []){
 					printf("Clase del personaje invalida\n");
 					return 0;
 				}
-				printf("Clase: %s \n", convierteEnumString(personaje.clase));
+				//printf("Clase: %s \n", convierteEnumString(personaje.clase));
 				break;
 			}
 			
 			case 3: {
 				personaje.nivel = atoi(token);
-				printf("Nivel: %d \n", personaje.nivel);
+				//printf("Nivel: %d \n", personaje.nivel);
 				break;
 			}
 
 			case 4: {
 				personaje.vida = atoi(token);
-				printf("Vida: %d \n", personaje.vida);
+				//printf("Vida: %d \n", personaje.vida);
 				break;
 			}
 			
 			case 5: {
 				personaje.poder_ataque = atoi(token);
-				printf("Ataque: %d \n", personaje.poder_ataque);
+				//printf("Ataque: %d \n", personaje.poder_ataque);
 				break;
 			}
 			
 			case 6: {
 				personaje.capacidad_defensa = atoi(token);
-				printf("Defensa: %d \n", personaje.capacidad_defensa);
+				//printf("Defensa: %d \n", personaje.capacidad_defensa);
 				break;
 			}
 			
 			case 7: {
 				personaje.habilidad_magia = atoi(token);
-				printf("Habilidad magia: %d\n", personaje.habilidad_magia);
+				//printf("Habilidad magia: %d\n", personaje.habilidad_magia);
 				break;	
 			}
 			
@@ -171,7 +172,8 @@ int main(int argc, char *argv []){
 	leerDatos();
 	
 	
-	free(personaje.nombre);
+	//free(personaje.nombre);
+	//free(personaje.nombre);
 	free(buffer);
 	
 	return 0;
@@ -238,6 +240,7 @@ void creaFichero(){
 	if(fichero == NULL){
 		fichero = fopen("personajes.txt", "w");
 		printf("Fichero creado con exito\n");
+		leerDatos();
 	}
 		
 	fclose(fichero);
@@ -250,33 +253,35 @@ void insertaDatos(Personaje_t personaje){
 	if(fichero == NULL){
 		printf("Error, no se pudo escribir en el archivo\n");
 	}else{
-		fprintf(fichero, "%s %s %d %d %d %d %d\n", personaje.nombre, convierteEnumString(personaje.clase), personaje.nivel,
+		fprintf(fichero, "%s %d %d %d %d %d %d\n", personaje.nombre, personaje.clase, personaje.nivel,
 		personaje.vida, personaje.poder_ataque, personaje.capacidad_defensa, personaje.habilidad_magia);
+		fclose(fichero);
 	}
-	
-	
-	
-	
-	/*printf("Datos del personaje: \n");
-	printf("------------------------");
-	printf("Nombre: %s \n", personaje.nombre);
-	printf("Clase: %s \n", convierteEnumString(personaje.clase));
-	printf("Nivel: %d \n", personaje.nivel);
-	printf("Vida: %d \n", personaje.vida);
-	printf("Ataque: %d \n", personaje.poder_ataque);
-	printf("Defensa: %d \n", personaje.capacidad_defensa);
-	printf("Habilidad magia: %d \n", personaje.habilidad_magia);*/
 }
 
 void leerDatos(){
 	
 	FILE *fichero = fopen("personajes.txt", "r");
+	Personaje_t personaje;
 	
 	if (fichero == NULL) {
         printf("No se pudo abrir el archivo.\n");
         return; 
-    }
+    }	
 	
+	printf("Lista de personajes: \n");
 	
+	while(fscanf(fichero, "%s %d %d %d %d %d %d", 
+			personaje.nombre, &personaje.clase, &personaje.nivel,
+			&personaje.vida, &personaje.poder_ataque, &personaje.capacidad_defensa, 
+			&personaje.habilidad_magia) == 7){
+		
+		printf("Nombre: %s, Clase: %s, Nivel: %d, HP: %d, ATK: %d, DEF: %d, MAG: %d\n",
+			personaje.nombre, convierteEnumString(personaje.clase), personaje.nivel,
+			personaje.vida, personaje.poder_ataque, personaje.capacidad_defensa, 
+			personaje.habilidad_magia);
+	
+	}
+
 	fclose(fichero);
 }
