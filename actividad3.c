@@ -86,6 +86,8 @@ char *leerLineaDinamica(char *nombre);
 void creaFichero();
 void insertaDatos(Personaje_t personaje);
 void leerDatos();
+void insertaPersonajesFiltrados(Personaje_t personaje);
+void leerDatosFiltrados();
 
 int main(int argc, char *argv []){
 	
@@ -102,7 +104,6 @@ int main(int argc, char *argv []){
 	
 	char *token = strtok(buffer, ",");
 	
-	printf("-------------------------------------------\n");
 	while(token != NULL){
 			
 		switch(contador){
@@ -170,6 +171,7 @@ int main(int argc, char *argv []){
 	creaFichero();
 	insertaDatos(personaje);
 	leerDatos();
+	leerDatosFiltrados();
 	
 	
 	//free(personaje.nombre);
@@ -240,7 +242,6 @@ void creaFichero(){
 	if(fichero == NULL){
 		fichero = fopen("personajes.txt", "w");
 		printf("Fichero creado con exito\n");
-		leerDatos();
 	}
 		
 	fclose(fichero);
@@ -271,17 +272,72 @@ void leerDatos(){
 	
 	printf("Lista de personajes: \n");
 	
+	float mediaNivel = 0;
+	int contador = 0;
+	
 	while(fscanf(fichero, "%s %d %d %d %d %d %d", 
-			personaje.nombre, &personaje.clase, &personaje.nivel,
-			&personaje.vida, &personaje.poder_ataque, &personaje.capacidad_defensa, 
-			&personaje.habilidad_magia) == 7){
+		  personaje.nombre, &personaje.clase, &personaje.nivel, &personaje.vida, 
+		  &personaje.poder_ataque, &personaje.capacidad_defensa, &personaje.habilidad_magia) == 7){
 		
 		printf("Nombre: %s, Clase: %s, Nivel: %d, HP: %d, ATK: %d, DEF: %d, MAG: %d\n",
 			personaje.nombre, convierteEnumString(personaje.clase), personaje.nivel,
 			personaje.vida, personaje.poder_ataque, personaje.capacidad_defensa, 
 			personaje.habilidad_magia);
-	
+		
+		mediaNivel += personaje.nivel;
+		contador++;
+		
+		if(personaje.nivel>7){
+			insertaPersonajesFiltrados(personaje);
+		}
 	}
-
+	
+	float mediaNivelResult = mediaNivel/contador;
+	printf("--------------------------------------\n");
+	printf("Estadistica de los personajes:\n");
+	printf("Media de nivel de todos los personajes: %.2f\n", mediaNivelResult);
+	
 	fclose(fichero);
+}
+
+
+void insertaPersonajesFiltrados(Personaje_t personaje){
+	
+	FILE *ficheroPersonajesFiltrados = fopen("personajesFiltrados.txt", "a+");
+	
+	if(ficheroPersonajesFiltrados == NULL){
+		printf("Error: no se pudo abrir o crear el archivo.\n");
+		return;
+	}
+	
+	fprintf(ficheroPersonajesFiltrados, "%s %d %d %d %d %d %d\n", 
+	personaje.nombre, personaje.clase, personaje.nivel, personaje.vida,
+	personaje.poder_ataque, personaje.capacidad_defensa, personaje.habilidad_magia);
+	
+	fclose(ficheroPersonajesFiltrados);
+}
+
+void leerDatosFiltrados(){
+	
+	FILE *ficheroPersonajesFiltrados = fopen("personajesFiltrados.txt", "r");
+	Personaje_t personaje;
+	
+	printf("---------------------------------------------------------\n");
+	if(ficheroPersonajesFiltrados == NULL){
+		printf("Error, el archivo de personajes filtrados por nivel no existe\n");
+		return;
+	}
+	
+	printf("Personajes filtrados:\n");
+	while(fscanf(ficheroPersonajesFiltrados, "%s %d %d %d %d %d %d", 
+	personaje.nombre, &personaje.clase, &personaje.nivel, &personaje.vida, &personaje.poder_ataque, &personaje.capacidad_defensa, &personaje.habilidad_magia) == 7){
+	
+	printf("Nombre: %s, Clase: %s, Nivel: %d, HP: %d, ATK: %d, DEF: %d, MAG: %d\n",
+			personaje.nombre, convierteEnumString(personaje.clase), personaje.nivel,
+			personaje.vida, personaje.poder_ataque, personaje.capacidad_defensa, 
+			personaje.habilidad_magia);	
+	}
+	
+	fclose(ficheroPersonajesFiltrados);
+	
 }
