@@ -1,52 +1,35 @@
-# 📂 Gestión de Empleados con Archivos Binarios (C)
+# 🕹️ Proyecto en C: Administración de Personajes de un Videojuego
 
-Este proyecto consiste en un programa en lenguaje C que permite gestionar una base de datos de empleados utilizando archivos binarios. El sistema incluye un menú interactivo desde el cual se pueden realizar operaciones como agregar, consultar, modificar y dar de baja empleados sin eliminar físicamente los registros del fichero.
+## 📘 ¿De qué trata este proyecto?
 
-Toda la información se almacena en un archivo binario llamado `empleados.dat`.
-
----
-
-## 🧱 Estructura del Programa
-
-El programa trabaja con una estructura llamada `Empleado`, que contiene los siguientes campos:
-
-- `id` (entero): identificador único del empleado
-- `nombre` (cadena de hasta 50 caracteres)
-- `salario` (entero)
-- `activo` (entero):
-  - `1`: empleado activo
-  - `0`: empleado dado de baja (baja lógica)
+La idea es simple: queremos tener un programa en C que nos permita gestionar los personajes de un videojuego. Es como si tuviéramos una pequeña base de datos de nuestros héroes, con sus estadísticas y habilidades, pero en lugar de usar algo complejo como SQL, lo haremos todo desde archivos de texto y usando estructuras en C.
 
 ---
 
-## 📋 Funcionalidades del Menú
+## 🧠 ¿Cómo funciona?
 
-Al ejecutar el programa, se muestra un menú con las siguientes opciones:
+Cuando ejecutas el programa, lo primero que hace es buscar un archivo con los personajes. Si ese archivo **ya existe**, el programa simplemente lo lee y te muestra toda la información: los nombres, clases, niveles, vida, etc.
 
-1. **Agregar empleado**  
-   Solicita ID, nombre y salario. Marca el campo `activo` como `1` y guarda el registro al final del archivo.
+Pero si ese archivo **no existe**, el programa asume que estás empezando desde cero. Entonces te pide que ingreses los datos de tus personajes a mano (nombre, clase, nivel, etc.) y luego los guarda en un archivo para que la próxima vez ya estén disponibles.
 
-2. **Listar empleados activos**  
-   Muestra solo los empleados cuyo campo `activo` sea igual a `1`.
+Después de tener la lista de personajes cargada, el programa hace un par de cosas más:
 
-3. **Buscar empleado por ID**  
-   Permite buscar un empleado específico por su ID. Si está activo, se muestra su información.
-
-4. **Modificar salario**  
-   Permite modificar el salario de un empleado activo. El registro se sobrescribe en su misma posición dentro del archivo.
-
-5. **Dar de baja por ID**  
-   Cambia el campo `activo` a `0`, sin eliminar físicamente el registro.
-
-6. **Salir**  
-   Finaliza el programa.
+1. **Calcula la media de los niveles** de todos los personajes.
+2. Crea un nuevo archivo aparte con solo los personajes que tienen un nivel **mayor a 7** (es decir, los que ya están más fuertes).
 
 ---
 
-## ⚙️ Compilación
+## 👾 ¿Qué datos tiene cada personaje?
 
-Para compilar el programa, abre una terminal y usa el siguiente comando:
+A cada personaje le vamos a guardar lo siguiente:
 
-```bash
-gcc -o empleados empleados.c
+- Nombre
+- Clase (pero ojo, solo puede ser una de estas: `guerrero`, `mago`, `arquero`, `paladín` o `rogue`)
+- Nivel
+- Vida
+- Poder de ataque
+- Defensa
+- Magia
+
+
 
