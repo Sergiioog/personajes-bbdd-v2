@@ -56,6 +56,8 @@ como letras cuando se soliciten números
 
 */
 
+//Sergio Garcia Gordo 1ºINSD
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -80,6 +82,7 @@ typedef struct {
 	int habilidad_magia;
 }Personaje_t;
 
+//Creamos funciones diferentes para cada objetivo, para tratarlas mejor.
 Clase_e convierteStringEnum(char *clase);
 char *convierteEnumString(Clase_e clase);
 char *leerLineaDinamica(char *nombre);
@@ -94,87 +97,100 @@ int main(int argc, char *argv []){
 	Personaje_t personaje;
 	int contador = 1;
 	
+	//Control de argumentos pasados por CLI
 	if(argc != 2){
 		printf("Numero de parametros invalido (> o < a 2)\n");
 		return 0;
 	}
 	
+	//Creamos memoria para almacenar en un buffer todo argv[1] ("Sergio,Mago,10,20,30,40,50")
 	char *buffer = (char*)malloc(strlen(argv[1]) + 1);
 	strcpy(buffer, argv[1]);
 	
+	//Creamos un espacio en memoria de tipo *char para "trocear" lo copiado en el buffer, separando por comas
 	char *token = strtok(buffer, ",");
 	
-	while(token != NULL){
+	//Mientras que haya otro "trozo" (valor) en nuestro buffer
+	while(token != NULL){ 
 			
 		switch(contador){
 			
 			case 1: {
+				
 				//personaje.nombre = leerLineaDinamica(token);
 				//personaje.nombre = (char*)malloc(sizeof(char) * strlen(token) + 1);
 				strcpy(personaje.nombre, token);
-				//printf("Nombre: %s \n", token);
 				break;
 			}
 			
 			case 2: {
-				char *clasePersonaje = token;
-				personaje.clase = convierteStringEnum(clasePersonaje);	
+				
+				char *clasePersonaje = token; 
+				//Hacemos que la clase sea lo obtenido a traves de meter en la func convierteStringEnum la enum
+				personaje.clase = convierteStringEnum(clasePersonaje);
 				if(personaje.clase == INVALID_CLASS){
 					printf("Clase del personaje invalida\n");
 					return 0;
 				}
-				//printf("Clase: %s \n", convierteEnumString(personaje.clase));
 				break;
 			}
 			
 			case 3: {
-				personaje.nivel = atoi(token);
-				//printf("Nivel: %d \n", personaje.nivel);
+				
+				//Convertimos en interger ascii-to-integer el token de la posicion 3
+				personaje.nivel = atoi(token); 
 				break;
+				
 			}
 
 			case 4: {
+				
 				personaje.vida = atoi(token);
-				//printf("Vida: %d \n", personaje.vida);
 				break;
+				
 			}
 			
 			case 5: {
+				
 				personaje.poder_ataque = atoi(token);
-				//printf("Ataque: %d \n", personaje.poder_ataque);
 				break;
+				
 			}
 			
 			case 6: {
+				
 				personaje.capacidad_defensa = atoi(token);
-				//printf("Defensa: %d \n", personaje.capacidad_defensa);
 				break;
+				
 			}
 			
 			case 7: {
+				
 				personaje.habilidad_magia = atoi(token);
-				//printf("Habilidad magia: %d\n", personaje.habilidad_magia);
 				break;	
+				
 			}
 			
 			default: {
+				
 				printf("Error al darle valor a los parametros\n");
 				return 0;
+				
 			}
+			
 		}
 		
-		token = strtok(NULL, ",");
-		contador++;
+		//Actualizamos el token pasandole null
+		token = strtok(NULL, ","); 
+		contador++; //Aumento de contador para el switch case
 	}
 	
-	
+	//Funciones de insercion y lectura de ficheros
 	creaFichero();
 	insertaDatos(personaje);
 	leerDatos();
 	leerDatosFiltrados();
-	
-	
-	//free(personaje.nombre);
+		
 	//free(personaje.nombre);
 	free(buffer);
 	
@@ -183,6 +199,7 @@ int main(int argc, char *argv []){
 
 Clase_e convierteStringEnum(char *clase){
 	
+	//Compara la clase con un string (char) y devuelve una enum (int)
 	if (strcmp(clase, "guerrero") == 0 || strcmp(clase, "Guerrero") == 0 || strcmp(clase, "GUERRERO") == 0) return GUERRERO;
 	else if (strcmp(clase, "mago") == 0 || strcmp(clase, "Mago") == 0 || strcmp(clase, "MAGO") == 0) return MAGO;
 	else if (strcmp(clase, "arquero") == 0 || strcmp(clase, "Arquero") == 0 || strcmp(clase, "ARQUERO") == 0) return ARQUERO;
@@ -193,7 +210,8 @@ Clase_e convierteStringEnum(char *clase){
 }
 
 char *convierteEnumString(Clase_e clase){
-	
+		
+	//Formateamos el integer de la ENUM en palabras legibles
 	switch(clase){
 		case GUERRERO: return "Guerrero";
 		case MAGO: return "Mago";
@@ -205,10 +223,124 @@ char *convierteEnumString(Clase_e clase){
 	
 }
 
-/*char *leerLineaDinamica(char *nombre){ //He tratado de hacer que el nombre sea dinamico con linea dinamica, pero si se introduce Juan Manuel por ej el programa
-										   va a entender argv[0] = nombreProg, argv[1] = Juan, argv[2] = Manuel, argv[3] = el resto -> Numero de parametros invalido > 2
-										   ya que en la practica no hay un ejemplo de modelo de datos de entrada del usuario por argc/argv. Debido a esto he decidido,
-										   reservar memoria en caso de que se quiera meter un nombre unico o compuesto por " ";
+
+void creaFichero(){
+	
+	FILE *fichero = fopen("personajes.txt", "r");
+	
+	//Inefeciente, pero abrimos primeramente en modo lectura, para que si falla, se cree.
+	if(fichero == NULL){
+		fichero = fopen("personajes.txt", "w");
+		printf("Fichero creado con exito\n");
+	}
+		
+	fclose(fichero);
+}
+
+void insertaDatos(Personaje_t personaje){
+	
+	FILE *fichero = fopen("personajes.txt", "a");
+	
+	if(fichero == NULL){
+		printf("Error, no se pudo escribir en el archivo\n");
+	}else{
+		//Insertamos valores con un salto de linea para su correcta indentacion
+		fprintf(fichero, "%s %d %d %d %d %d %d\n", personaje.nombre, personaje.clase, personaje.nivel,
+		personaje.vida, personaje.poder_ataque, personaje.capacidad_defensa, personaje.habilidad_magia);
+	}
+	
+	fclose(fichero);
+}
+
+void leerDatos(){
+	
+	FILE *fichero = fopen("personajes.txt", "r");
+	Personaje_t personaje;
+	
+	if (fichero == NULL) {
+        printf("No se pudo abrir el archivo.\n");
+        return; 
+    }	
+	
+	printf("Lista de personajes: \n");
+	
+	float mediaNivel = 0;
+	int contador = 0;
+	
+	while(fscanf(fichero, "%s %d %d %d %d %d %d", 
+		  personaje.nombre, &personaje.clase, &personaje.nivel, &personaje.vida, 
+		  &personaje.poder_ataque, &personaje.capacidad_defensa, &personaje.habilidad_magia) == 7){
+		
+		//Mostramos los personajes encontrados. La clase la convertimos en una palabra legible en el momento de mostrarlos
+		printf("Nombre: %s, Clase: %s, Nivel: %d, HP: %d, ATK: %d, DEF: %d, MAG: %d\n",
+			personaje.nombre, convierteEnumString(personaje.clase), personaje.nivel,
+			personaje.vida, personaje.poder_ataque, personaje.capacidad_defensa, 
+			personaje.habilidad_magia);
+		
+		//Media de nivel
+		mediaNivel += personaje.nivel; 
+		contador++;
+	}
+	
+	//Pasamos el personaje x cuyo nivel > 7
+	if(personaje.nivel>7){
+		insertaPersonajesFiltrados(personaje);
+	}
+	
+	float mediaNivelResult = mediaNivel/contador;
+	printf("--------------------------------------\n");
+	printf("Estadistica de los personajes:\n");
+	printf("Media de nivel de todos los personajes: %.2f\n", mediaNivelResult);
+	
+	fclose(fichero);
+}
+
+
+void insertaPersonajesFiltrados(Personaje_t personaje){
+	
+	//Lo abrimos en a+ para que añada al final y ademas lo lea
+	FILE *ficheroPersonajesFiltrados = fopen("personajesFiltrados.txt", "a+");
+	
+	if(ficheroPersonajesFiltrados == NULL){
+		printf("Error: no se pudo abrir o crear el archivo.\n");
+		return;
+	}
+	
+	//Escribimos el personaje nivel > 7
+	fprintf(ficheroPersonajesFiltrados, "%s %d %d %d %d %d %d\n", 
+	personaje.nombre, personaje.clase, personaje.nivel, personaje.vida,
+	personaje.poder_ataque, personaje.capacidad_defensa, personaje.habilidad_magia);
+		
+	fclose(ficheroPersonajesFiltrados);
+}
+
+void leerDatosFiltrados(){
+	
+	FILE *ficheroPersonajesFiltrados = fopen("personajesFiltrados.txt", "r");
+	Personaje_t personaje;
+	
+	printf("---------------------------------------------------------\n");
+	if(ficheroPersonajesFiltrados == NULL){
+		printf("Error, el archivo de personajes filtrados por nivel no existe (no se ha insertado personaje con nivel > 7)\n");
+		return;
+	}
+	
+	printf("Personajes filtrados:\n");
+	while(fscanf(ficheroPersonajesFiltrados, "%s %d %d %d %d %d %d", 
+	personaje.nombre, &personaje.clase, &personaje.nivel, &personaje.vida, &personaje.poder_ataque, &personaje.capacidad_defensa, &personaje.habilidad_magia) == 7){
+	
+	printf("Nombre: %s, Clase: %s, Nivel: %d, HP: %d, ATK: %d, DEF: %d, MAG: %d\n",
+			personaje.nombre, convierteEnumString(personaje.clase), personaje.nivel,
+			personaje.vida, personaje.poder_ataque, personaje.capacidad_defensa, 
+			personaje.habilidad_magia);	
+	}
+	
+	fclose(ficheroPersonajesFiltrados);
+	
+}
+
+
+/*char *leerLineaDinamica(char *nombre){ 
 	printf("Nombre -> %s\n", nombre);
 
 	char *linea = (char*)malloc(sizeof(char)*1);
@@ -232,112 +364,11 @@ char *convierteEnumString(Clase_e clase){
 	linea[numeroLetras] = '\0';	
 	return linea;
 	
-}*/
-
-
-void creaFichero(){
-	
-	FILE *fichero = fopen("personajes.txt", "r");
-	
-	if(fichero == NULL){
-		fichero = fopen("personajes.txt", "w");
-		printf("Fichero creado con exito\n");
-	}
-		
-	fclose(fichero);
 }
 
-void insertaDatos(Personaje_t personaje){
-	
-	FILE *fichero = fopen("personajes.txt", "a");
-	
-	if(fichero == NULL){
-		printf("Error, no se pudo escribir en el archivo\n");
-	}else{
-		fprintf(fichero, "%s %d %d %d %d %d %d\n", personaje.nombre, personaje.clase, personaje.nivel,
-		personaje.vida, personaje.poder_ataque, personaje.capacidad_defensa, personaje.habilidad_magia);
-		fclose(fichero);
-	}
-}
+	He tratado de hacer que el nombre sea dinamico con linea dinamica, pero si se introduce Juan Manuel por ej el programa
+	va a entender argv[0] = nombreProg, argv[1] = Juan, argv[2] = Manuel, argv[3] = el resto -> Numero de parametros invalido > 2
+	ya que en la practica no hay un ejemplo de modelo de datos de entrada del usuario por argc/argv. Se que es propenso a errores con nombres que 
+	sobrepasen el limite permitido, pero es lo que he podido hacer.
 
-void leerDatos(){
-	
-	FILE *fichero = fopen("personajes.txt", "r");
-	Personaje_t personaje;
-	
-	if (fichero == NULL) {
-        printf("No se pudo abrir el archivo.\n");
-        return; 
-    }	
-	
-	printf("Lista de personajes: \n");
-	
-	float mediaNivel = 0;
-	int contador = 0;
-	
-	while(fscanf(fichero, "%s %d %d %d %d %d %d", 
-		  personaje.nombre, &personaje.clase, &personaje.nivel, &personaje.vida, 
-		  &personaje.poder_ataque, &personaje.capacidad_defensa, &personaje.habilidad_magia) == 7){
-		
-		printf("Nombre: %s, Clase: %s, Nivel: %d, HP: %d, ATK: %d, DEF: %d, MAG: %d\n",
-			personaje.nombre, convierteEnumString(personaje.clase), personaje.nivel,
-			personaje.vida, personaje.poder_ataque, personaje.capacidad_defensa, 
-			personaje.habilidad_magia);
-		
-		mediaNivel += personaje.nivel;
-		contador++;
-		
-		if(personaje.nivel>7){
-			insertaPersonajesFiltrados(personaje);
-		}
-	}
-	
-	float mediaNivelResult = mediaNivel/contador;
-	printf("--------------------------------------\n");
-	printf("Estadistica de los personajes:\n");
-	printf("Media de nivel de todos los personajes: %.2f\n", mediaNivelResult);
-	
-	fclose(fichero);
-}
-
-
-void insertaPersonajesFiltrados(Personaje_t personaje){
-	
-	FILE *ficheroPersonajesFiltrados = fopen("personajesFiltrados.txt", "a+");
-	
-	if(ficheroPersonajesFiltrados == NULL){
-		printf("Error: no se pudo abrir o crear el archivo.\n");
-		return;
-	}
-	
-	fprintf(ficheroPersonajesFiltrados, "%s %d %d %d %d %d %d\n", 
-	personaje.nombre, personaje.clase, personaje.nivel, personaje.vida,
-	personaje.poder_ataque, personaje.capacidad_defensa, personaje.habilidad_magia);
-	
-	fclose(ficheroPersonajesFiltrados);
-}
-
-void leerDatosFiltrados(){
-	
-	FILE *ficheroPersonajesFiltrados = fopen("personajesFiltrados.txt", "r");
-	Personaje_t personaje;
-	
-	printf("---------------------------------------------------------\n");
-	if(ficheroPersonajesFiltrados == NULL){
-		printf("Error, el archivo de personajes filtrados por nivel no existe\n");
-		return;
-	}
-	
-	printf("Personajes filtrados:\n");
-	while(fscanf(ficheroPersonajesFiltrados, "%s %d %d %d %d %d %d", 
-	personaje.nombre, &personaje.clase, &personaje.nivel, &personaje.vida, &personaje.poder_ataque, &personaje.capacidad_defensa, &personaje.habilidad_magia) == 7){
-	
-	printf("Nombre: %s, Clase: %s, Nivel: %d, HP: %d, ATK: %d, DEF: %d, MAG: %d\n",
-			personaje.nombre, convierteEnumString(personaje.clase), personaje.nivel,
-			personaje.vida, personaje.poder_ataque, personaje.capacidad_defensa, 
-			personaje.habilidad_magia);	
-	}
-	
-	fclose(ficheroPersonajesFiltrados);
-	
-}
+*/
